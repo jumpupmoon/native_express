@@ -52,7 +52,7 @@ const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
 
 // 등산 시작
 app.get('/start', (req, res) => {
-    getContract().methods.start('0xA056a429661D5609709433ff25b8Ea82590A0053', 3).send({
+    getContract().methods.start(req.query.address, 3).send({
         from: address,
         gas: '200000'
     })
@@ -89,8 +89,8 @@ app.get('/score/:idx', async (req, res) => {
 })
 
 // 총 등산 횟수 확인
-app.get('/count', async (req, res) => {
-    const result = await getContract().methods.getLength('0xA056a429661D5609709433ff25b8Ea82590A0053').call()
+app.get('/count/:address', async (req, res) => {
+    const result = await getContract().methods.getLength(req.params.address).call();
     res.json(result);
 })
 
