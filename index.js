@@ -68,7 +68,7 @@ app.get('/start', (req, res) => {
 
 // 등산 종료
 app.get('/end', (req, res) => {
-    getContract().methods.end('0xA056a429661D5609709433ff25b8Ea82590A0053', 1, 5).send({
+    getContract().methods.end(req.query.address, req.query.idx, 5).send({
         from: address,
         gas: '200000'
     })
