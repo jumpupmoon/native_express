@@ -83,8 +83,8 @@ app.get('/end', (req, res) => {
 })
 
 // 등산 기록 단일
-app.get('/score/:idx', async (req, res) => {
-    const result = await getContract().methods.getRecord('0xA056a429661D5609709433ff25b8Ea82590A0053', req.params.idx).call()
+app.get('/score', async (req, res) => {
+    const result = await getContract().methods.getRecord(req.query.address, req.query.idx).call()
     res.json(result);
 })
 
