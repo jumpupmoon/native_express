@@ -82,16 +82,22 @@ app.get('/end', (req, res) => {
     })
 })
 
-// 등산 기록 확인
+// 등산 기록 단일
 app.get('/score/:idx', async (req, res) => {
     const result = await getContract().methods.getRecord('0xA056a429661D5609709433ff25b8Ea82590A0053', req.params.idx).call()
     res.json(result);
 })
 
-// 총 등산 횟수 확인
-app.get('/count/:address', async (req, res) => {
+// 등산 기록 목록
+app.get('/list/:address', async (req, res) => {
     const result = await getContract().methods.getLength(req.params.address).call();
-    res.json(result);
+    let score = [];
+    for(let i=result-1; i>-1; i--) {
+        if(i == -1) break;
+        if(i == result-6) break;
+        score.push(await getContract().methods.getRecord(req.params.address, i).call());
+    }
+    res.json({result, score});
 })
 
 // 새로운 지갑 주소 생성
