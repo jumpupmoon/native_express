@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const Caver = require('caver-js');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 const app = express();
 const port = 5000;
@@ -16,6 +17,14 @@ mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopolo
 .then(() => console.log('connected to mongodb'))
 .catch(e => console.error(e));
 
+// wallet header
+const walletHeaders = {
+    headers: {
+        "Authorization": 'Basic ' + Buffer.from(process.env.ACCESS_KEY + ':' + process.env.SECRET_ACCESS).toString('base64'),
+        "X-Chain-Id": '1001'
+    }
+}
+
 // kas node api
 const option = {
     headers: [
@@ -28,6 +37,7 @@ const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klayt
 
 // 배포한 컨트랙트 인스턴트 만들기
 const deployedABI = require('./deployedABI.json');
+const { default: Axios } = require("axios");
 const DEPLOY_ADDRESS = '0x2850f56374Ad1cE6649D2adC53D6057ba2D9aEFA';
 
 const getContract = () => {
@@ -82,6 +92,14 @@ app.get('/score/:idx', async (req, res) => {
 app.get('/count', async (req, res) => {
     const result = await getContract().methods.getLength('0xA056a429661D5609709433ff25b8Ea82590A0053').call()
     res.json(result);
+})
+
+// 새로운 지갑 주소 생성
+app.get('/new', (req, res) => {
+    axios.post('https://wallet-api.klaytnapi.com/v2/account', '', walletHeaders)
+    .then(({data}) => {
+        res.send(data.address);
+    })
 })
 
 // 서버 시작
