@@ -90,14 +90,16 @@ app.get('/score', async (req, res) => {
 
 // 등산 기록 목록
 app.get('/list/:address', async (req, res) => {
-    const result = await getContract().methods.getLength(req.params.address).call();
+    const count = await getContract().methods.getLength(req.params.address).call();
     let score = [];
-    for(let i=result-1; i>-1; i--) {
+    for(let i=count-1; i>-1; i--) {
         if(i == -1) break;
-        if(i == result-5) break;
-        score.push(await getContract().methods.getRecord(req.params.address, i).call());
+        if(i == count-5) break;
+
+        const result = await getContract().methods.getRecord(req.params.address, i).call();
+        score.push({...result, idx: i});
     }
-    res.json({result, score});
+    res.json({count, score});
 })
 
 // 새로운 지갑 주소 생성
