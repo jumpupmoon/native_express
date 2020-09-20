@@ -85,7 +85,7 @@ app.get('/end', (req, res) => {
 // 등산 기록 단일
 app.get('/score', async (req, res) => {
     const result = await getContract().methods.getRecord(req.query.address, req.query.idx).call()
-    res.json(result);
+    res.json({...result, idx: req.query.idx});
 })
 
 // 등산 기록 목록
@@ -94,7 +94,7 @@ app.get('/list/:address', async (req, res) => {
     let score = [];
     for(let i=result-1; i>-1; i--) {
         if(i == -1) break;
-        if(i == result-6) break;
+        if(i == result-5) break;
         score.push(await getContract().methods.getRecord(req.params.address, i).call());
     }
     res.json({result, score});
