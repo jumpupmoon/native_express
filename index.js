@@ -37,7 +37,6 @@ const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klayt
 
 // 배포한 컨트랙트 인스턴트 만들기
 const deployedABI = require('./deployedABI.json');
-const { default: Axios } = require("axios");
 const DEPLOY_ADDRESS = '0x2850f56374Ad1cE6649D2adC53D6057ba2D9aEFA';
 
 const getContract = () => {
@@ -52,7 +51,7 @@ const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
 
 // 등산 시작
 app.get('/start', (req, res) => {
-    getContract().methods.start(req.query.address, 3).send({
+    getContract().methods.start(req.query.address, req.query.course).send({
         from: address,
         gas: '200000'
     })
