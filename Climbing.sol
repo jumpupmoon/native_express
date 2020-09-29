@@ -33,7 +33,7 @@ contract Climbing {
         record[user][idx].idx = record[user].length;
     }
     
-    function lookUp(address _user) public view returns(uint8[] memory,uint8[] memory,uint256[] memory,uint256[] memory) {
+    function lookUp(address _user) public view returns(uint256, uint8[] memory,uint8[] memory,uint256[] memory,uint256[] memory) {
 
         uint256 idx =record[_user].length;
         uint256[] memory _start=new uint256[](5);
@@ -55,7 +55,7 @@ contract Climbing {
                 _end[i]=record[_user][idx-1-i].end;
             }
         }
-        return (_course,_score,_start,_end);
+        return (idx, _course,_score,_start,_end);
     }
     
     

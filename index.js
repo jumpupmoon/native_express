@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 
 const app = express();
-const port = 5000;
 
 dotenv.config();
 
@@ -37,7 +36,7 @@ const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klayt
 
 // 배포한 컨트랙트 인스턴트 만들기
 const deployedABI = require('./deployedABI.json');
-const DEPLOY_ADDRESS = '0x2850f56374Ad1cE6649D2adC53D6057ba2D9aEFA';
+const DEPLOY_ADDRESS = '0x8F34C3c00479910D0cBF3CCa1E7bDb2b1E7E045e';
 
 const getContract = () => {
   const contractInstance = deployedABI
@@ -89,16 +88,8 @@ app.get('/score', async (req, res) => {
 
 // 등산 기록 목록
 app.get('/list/:address', async (req, res) => {
-    const count = await getContract().methods.getLength(req.params.address).call();
-    let score = [];
-    for(let i=count-1; i>-1; i--) {
-        if(i == -1) break;
-        if(i == count-5) break;
-
-        const result = await getContract().methods.getRecord(req.params.address, i).call();
-        score.push({...result, idx: i});
-    }
-    res.json({count, score});
+    const score = await getContract().methods.lookUp(req.params.address).call();
+    res.json({score});
 })
 
 // 새로운 지갑 주소 생성
@@ -110,8 +101,8 @@ app.get('/new', (req, res) => {
 })
 
 // 서버 시작
-app.listen(port, () => {
-    console.log(`server start port ${port}`);
+app.listen(process.env.PORT || 5000, () => {
+    console.log('server start');
     const wallet = caver.klay.accounts.privateKeyToAccount('0x7799f99c68259cec434d35cbaf419bc1c3f8dce0b4db6f2e6a972ade4a58bdac');
     caver.klay.accounts.wallet.add(wallet);
 });
