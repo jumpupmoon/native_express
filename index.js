@@ -50,13 +50,15 @@ const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
 
 // 등산 시작
 app.get('/start', (req, res) => {
-    const count = getContract().methods.getLength(req.params.address).call();
     getContract().methods.start(req.query.address, req.query.course).send({
         from: address,
         gas: '200000'
     })
-    .once('receipt', receipt => {
-        res.send(count);
+    .once('receipt', () => {
+        getContract().methods.getLength(req.query.address).call()
+        .then(count => {
+            res.send(count);
+        })
     })
     .once('error', error => {
         console.log(error);
