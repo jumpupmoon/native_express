@@ -3,10 +3,12 @@ const dotenv = require("dotenv");
 const Caver = require('caver-js');
 const mongoose = require('mongoose');
 const axios = require('axios');
+const data = require('./Mountain.json');
 
 const app = express();
-
 dotenv.config();
+
+const Point = require('./model/Point');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -100,6 +102,31 @@ app.get('/new', (req, res) => {
     .then(({data}) => {
         res.send(data.address);
     })
+})
+
+// 테스트 db 등록용
+app.get('/data', (req, res) => {
+    data.map(d => {
+        const cnt = d.courseDetail.length;
+        d.courseDetail.map((p, idx) => {
+            point = new Point();
+            point.seq = idx
+            point.name = p.name 
+            if(cnt-1 != idx) {
+                point.distance = p.distance;
+                point.time = p.time;
+                point.difficulty = p.difficulty;
+            }
+
+            point.save(err => {
+                if(err) {
+                    console.log(err);
+                    return false;
+                }
+            })
+        })
+    })
+    res.send('1')
 })
 
 // 서버 시작

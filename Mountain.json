@@ -1,0 +1,241 @@
+[
+    {        
+        "name": "돈내코탐방로",
+        "distance": "7",
+        "course": "돈내코탐방로 살채기도 평궤대피소 남벽일대",
+        "time": "약 3시간 30분 소요",
+        "shelter": ["평궤대피소(무인)"],
+        "store": ["없음"],
+        "toilet": ["돈내코탐방안내소", "평궤대피소"],
+        "average": "평균 : 3시간30분",
+        "first": "1 등 :2시간 50분",
+        "discription": "한라산백록담조면암의 라바돔을 가장 멋있게 조망할 수 있다.",
+        "courseDetail": [
+            {
+                "name": "돈내코 탐방안내소",
+                "distance": "5.3",
+                "time": "2시간50분",
+                "difficulty": "보통"
+            },
+            {
+                "name": "평궤대피소",
+                "distance": "1.7",
+                "time": "40분",
+                "difficulty": "보통"
+            },
+            {
+                "name": "남벽분기점"
+            }
+        ]
+    },
+    {
+        "name": "영실탐방로",
+        "distance": "5.8",
+        "course": "영실휴게소 영실계곡  병풍바위   대피소   남벽분기점",
+        "time": "약 2시간 30분 소요",
+        "shelter": ["윗세오름 대피소(유인)"],
+        "store": ["영실 휴게소"],
+        "toilet": ["영실 탐방안내소", "영실 휴게소", "윗세오름 대피소"],
+        "average": "평균 : 2시간 30분",
+        "first": "1 등 : 2시간 13분",
+        "discription": "대부분 평탄지형으로 탐방이 쉬운 편",
+        "courseDetail": [
+            {
+                "name": "영실 탐방안내소",
+                "distance": "2.4",
+                "time": "40분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "영실 휴게소",
+                "distance": "1.5",
+                "time": "50분",
+                "difficulty": "어려움"
+            },
+            {
+                "name": "병풍바위",
+                "distance": "2.2",
+                "time": "40분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "윗세오름 대피소",
+                "distance": "2.1",
+                "time": "1시간",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "남벽분기점"
+            }
+        ]
+    },
+    {
+        "name": "관음사탐방로",
+        "distance": "8.7",
+        "course": "탐방안내소 탐라계곡    대피소      용진각      백록담",
+        "time": "약 5시간 소요",
+        "shelter": ["삼각봉대피소(유인)"],
+        "store": ["관음사탐방로 입구 휴게소"],
+        "toilet": ["관음사야영장", "삼각봉대피소"],
+        "average": "평균 : 5시간",
+        "first": "1 등 : 4시간 48분",
+        "discription": "자연생태계를 관찰하면서 삼림욕",
+        "courseDetail": [
+            {
+                "name": "관음사 탐방안내소",
+                "distance": "3.2",
+                "time": "1시간",
+                "difficulty": "보통"
+            },
+            {
+                "name": "탐라계곡",
+                "distance": "1.7",
+                "time": "1시간 30분",
+                "difficulty": "어려움"
+            },
+            {
+                "name": "삼각봉 대피소",
+                "distance": "1.1",
+                "time": "50분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "용진각",
+                "distance": "2.7",
+                "time": "1시간 40분",
+                "difficulty": "어려움"
+            },
+            {
+                "name": "백록담"
+            }
+        ]
+    },
+    {
+        "name": "성판악탐방로",
+        "distance": "9.6",
+        "course": "탐방안내소   속밭     사라막샘     진달래밭    백록담",
+        "time": "약 4시간 30분 소요",
+        "shelter": ["속밭대피소(무인)", "진달래밭대피소(유인)"],
+        "store": ["성판악 휴게소"],
+        "toilet": ["성판악 사무실", "속밭 대피소", "진달래밭 대피소"],
+        "average": "평균 : 4시간 22분",
+        "first": "1 등 : 4시간 10분",
+        "discription": "삼림욕을 즐기며 탐방하기에 최적의 장소",
+        "courseDetail": [
+            {
+                "name": "성판악 탐방안내소",
+                "distance": "4.1",
+                "time": "1시간 20분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "속밭 대피소",
+                "distance": "1.7",
+                "time": "40분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "사라오름 입구",
+                "distance": "1.5",
+                "time": "1시간",
+                "difficulty": "보통"
+            },
+            {
+                "name": "진달래밭",
+                "distance": "2.3",
+                "time": "1시간 30분",
+                "difficulty": "어려움"
+            },
+            {
+                "name": "백록담"
+            }
+        ]
+    },
+    {
+        "name": "어리목탐방로",
+        "distance": "6.8",
+        "course": "어리목계곡 사제비동산 만세동산 윗세오름대피소 남벽분기점",
+        "time": "약 3시간 소요",
+        "shelter": ["윗세오름 대피소(유인)"],
+        "store": ["물, 음료수 자판기"],
+        "toilet": ["어리목 광장", "윗세오름 대피소"],
+        "average": "평균 : 3시간",
+        "first": "1 등 : 2시간 24분",
+        "discription": "백록담 남쪽 화구벽과 한라산의 아름다운 풍광을 마음껏 즐길 수 있다.",
+        "courseDetail": [
+            {
+                "name": "어리목 탐방안내소",
+                "distance": "2.4",
+                "time": "1시간",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "사제비동산",
+                "distance": "0.8",
+                "time": "30분",
+                "difficulty": "어려움"
+            },
+            {
+                "name": "만세동산",
+                "distance": "1.5",
+                "time": "30분",
+                "difficulty": "보통"
+            },
+            {
+                "name": "윗세오름",
+                "distance": "2.1",
+                "time": "1시간",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "남벽분기점"
+            }
+        ]
+    },
+    {
+        "name": "석굴암탐방로",
+        "distance": "1.5",
+        "course": "탐방로입구 정비된탐방로 석굴암암자",
+        "time": "약 50분 소요",
+        "shelter": ["없음"],
+        "store": ["없음"],
+        "toilet": ["없음"],
+        "average": "평균 : 50분",
+        "first": "1 등 :28분",
+        "discription": "골짜기와 산세가 뛰어난 아흔아홉골에 위치한 석굴암",
+        "courseDetail": [
+            {
+                "name": "충혼묘지 주차장",
+                "distance": "1.5",
+                "time": "50분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "석굴암"
+            }
+        ]
+    },
+    {
+        "name": "어승생악탐방로",
+        "distance": "1.3",
+        "course": "탐방안내소 어승생악",
+        "time": "약 30분 소요",
+        "shelter": ["없음"],
+        "store": ["없음"],
+        "toilet": ["없음"],
+        "average": "평균 : 30분",
+        "first": "1 등 :26분",
+        "discription": "탐방객이 즐겨찾는 오름으로서 자연생태가 잘 보존되어 있음",
+        "courseDetail": [
+            {
+                "name": "어리목 탐방안내소",
+                "distance": "1.3",
+                "time": "30분",
+                "difficulty": "쉬움"
+            },
+            {
+                "name": "어승생악"
+            }
+        ]
+    }
+]
