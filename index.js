@@ -148,12 +148,23 @@ app.get('/new', (req, res) => {
 //     res.send('1')
 // })
 
+// 단일 코스 정보
 app.get('/course/:idx', (req, res) => {
     Course.findOne({seq: req.params.idx})
     .populate({path: 'courseDetail', options: {sort: {'seq': 1}}})
     .exec((err, course) => {
         if(err) res.json({result: 0, err})
         else res.json({reuslt: 1, course})
+    })
+})
+
+// 코스 목록
+app.get('/course', (req, res) => {
+    Course.find({})
+    .populate({path: 'courseDetail', options: {sort: {'seq': 1}}})
+    .exec((err, list) => {
+        if(err) res.json({result: 0, err})
+        else res.json({reuslt: 1, list})
     })
 })
 
