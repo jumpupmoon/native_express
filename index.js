@@ -9,6 +9,7 @@ const app = express();
 dotenv.config();
 
 const Point = require('./model/Point');
+const Course = require('./model/Course');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -105,28 +106,55 @@ app.get('/new', (req, res) => {
 })
 
 // 테스트 db 등록용
-app.get('/data', (req, res) => {
-    data.map(d => {
-        const cnt = d.courseDetail.length;
-        d.courseDetail.map((p, idx) => {
-            point = new Point();
-            point.seq = idx
-            point.name = p.name 
-            if(cnt-1 != idx) {
-                point.distance = p.distance;
-                point.time = p.time;
-                point.difficulty = p.difficulty;
-            }
+// app.get('/data', (req, res) => {
+//     data.map((d, idx) => {
+//         course = new Course();
+//         course.seq = idx;
+//         course.name = d.name;
+//         course.distance = d.distance;
+//         course.time = d.time;
+//         course.shelter = d.shelter;
+//         course.store = d.store;
+//         course.discription = d.discription
 
-            point.save(err => {
-                if(err) {
-                    console.log(err);
-                    return false;
-                }
-            })
-        })
+//         const cnt = d.courseDetail.length;
+//         d.courseDetail.map((p, idx) => {
+//             point = new Point();
+//             point.seq = idx
+//             point.name = p.name 
+//             if(cnt-1 != idx) {
+//                 point.distance = p.distance;
+//                 point.time = p.time;
+//                 point.difficulty = p.difficulty;
+//             }
+
+//             point.save(err => {
+//                 if(err) {
+//                     console.log(err);
+//                     return false;
+//                 }
+//             })
+            
+//             course.courseDetail.push(point._id)
+//         })
+
+//         course.save(err => {
+//             if(err) {
+//                 console.log(err);
+//                 return false;
+//             }
+//         })
+//     })
+//     res.send('1')
+// })
+
+app.get('/course/:idx', (req, res) => {
+    Course.findOne({seq: req.params.idx})
+    .populate({path: 'courseDetail', options: {sort: {'seq': 1}}})
+    .exec((err, course) => {
+        if(err) res.json({result: 0, err})
+        else res.json({reuslt: 1, course})
     })
-    res.send('1')
 })
 
 // 서버 시작

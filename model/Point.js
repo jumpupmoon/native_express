@@ -5,7 +5,7 @@ const pointSchema = new mongoose.Schema({
     name: {type: String, required: true},
     distance: Number,
     time: String,
-    difficulty: String
+    difficulty: String,
 })
 
 module.exports = mongoose.model('Point', pointSchema);
