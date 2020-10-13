@@ -10,6 +10,7 @@ dotenv.config();
 
 const Course = require('./model/Course');
 const Score = require('./model/Score');
+const Point = require('./model/Point');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -133,49 +134,6 @@ app.get('/new', (req, res) => {
         res.send(data.address);
     })
 })
-
-// 테스트 db 등록용
-// app.get('/data', (req, res) => {
-//     data.map((d, idx) => {
-//         course = new Course();
-//         course.seq = idx;
-//         course.name = d.name;
-//         course.distance = d.distance;
-//         course.time = d.time;
-//         course.shelter = d.shelter;
-//         course.store = d.store;
-//         course.discription = d.discription
-
-//         const cnt = d.courseDetail.length;
-//         d.courseDetail.map((p, idx) => {
-//             point = new Point();
-//             point.seq = idx
-//             point.name = p.name 
-//             if(cnt-1 != idx) {
-//                 point.distance = p.distance;
-//                 point.time = p.time;
-//                 point.difficulty = p.difficulty;
-//             }
-
-//             point.save(err => {
-//                 if(err) {
-//                     console.log(err);
-//                     return false;
-//                 }
-//             })
-            
-//             course.courseDetail.push(point._id)
-//         })
-
-//         course.save(err => {
-//             if(err) {
-//                 console.log(err);
-//                 return false;
-//             }
-//         })
-//     })
-//     res.send('1')
-// })
 
 // 단일 코스 정보
 app.get('/course/:idx', (req, res) => {
