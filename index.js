@@ -86,7 +86,6 @@ app.get('/list/:address', (req, res) => {
     Score.find({address: req.params.address})
     .populate('course')
     .sort('-start')
-    .limit(5)
     .exec((err, scores) => {
         if(err) return res.json({result: 0, err})
         res.json({result: 1, scores})
