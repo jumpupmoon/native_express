@@ -84,6 +84,7 @@ app.get('/score/:id', (req, res) => {
 // 등산 기록 목록
 app.get('/list/:address', (req, res) => {
     Score.find({address: req.params.address})
+    .populate('course')
     .sort('-start')
     .limit(5)
     .exec((err, scores) => {
