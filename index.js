@@ -52,46 +52,6 @@ const getContract = () => {
 // 매니저 지갑
 const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
 
-// 등산 시작
-app.get('/start', (req, res) => {
-    getContract().methods.start(req.query.address, req.query.course).send({
-        from: address,
-        gas: '200000'
-    })
-    .once('receipt', () => {
-        getContract().methods.getLength(req.query.address).call()
-        .then(count => {
-            res.send(count);
-        })
-    })
-    .once('error', error => {
-        console.log(error);
-        res.send('fail');
-    })
-})
-
-// 등산 종료
-app.get('/end', (req, res) => {
-    getContract().methods.end(req.query.address, req.query.idx, 5).send({
-        from: address,
-        gas: '200000'
-    })
-    .once('receipt', receipt => {
-        console.log(receipt);
-        res.send('ok');
-    })
-    .once('error', error => {
-        console.log(error);
-        res.send('fail');
-    })
-})
-
-// 등산 기록 단일 조회(klaytn)
-app.get('/score', async (req, res) => {
-    const result = await getContract().methods.getRecord(req.query.address, req.query.idx).call()
-    res.json({...result, idx: req.query.idx});
-})
-
 // 등산 기록 등록
 app.post('/score', (req, res) => {
     score = new Score();
@@ -105,26 +65,31 @@ app.post('/score', (req, res) => {
         score.save(err => {
             if(err) return res.json({result: 0, err});
 
-            res.json({reulst: 1, id: score._id});
+            res.json({result: 1, id: score._id});
         })
     })
 })
 
-// 등산 기록 단일 조회(db)
+// 등산 기록 단일 조회
 app.get('/score/:id', (req, res) => {
     Score.findOne({_id: req.params.id})
     .populate('course')
     .exec((err, score) => {
         if(err) return res.json({result: 0, err})
         
-        res.json({reuslt: 1, score})
+        res.json({result: 1, score})
     })
 })
 
 // 등산 기록 목록
-app.get('/list/:address', async (req, res) => {
-    const score = await getContract().methods.lookUp(req.params.address).call();
-    res.json({score});
+app.get('/list/:address', (req, res) => {
+    Score.find({address: req.params.address})
+    .sort('-start')
+    .limit(5)
+    .exec((err, scores) => {
+        if(err) return res.json({result: 0, err})
+        res.json({result: 1, scores})
+    })
 })
 
 // 새로운 지갑 주소 생성
@@ -141,7 +106,7 @@ app.get('/course/:idx', (req, res) => {
     .populate({path: 'courseDetail', options: {sort: {'seq': 1}}})
     .exec((err, course) => {
         if(err) res.json({result: 0, err})
-        else res.json({reuslt: 1, course})
+        else res.json({result: 1, course})
     })
 })
 
@@ -151,7 +116,7 @@ app.get('/course', (req, res) => {
     .populate({path: 'courseDetail', options: {sort: {'seq': 1}}})
     .exec((err, list) => {
         if(err) res.json({result: 0, err})
-        else res.json({reuslt: 1, list})
+        else res.json({result: 1, list})
     })
 })
 
