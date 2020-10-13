@@ -8,8 +8,8 @@ const data = require('./Mountain.json');
 const app = express();
 dotenv.config();
 
-const Point = require('./model/Point');
 const Course = require('./model/Course');
+const Score = require('./model/Score');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -85,10 +85,39 @@ app.get('/end', (req, res) => {
     })
 })
 
-// 등산 기록 단일
+// 등산 기록 단일 조회(klaytn)
 app.get('/score', async (req, res) => {
     const result = await getContract().methods.getRecord(req.query.address, req.query.idx).call()
     res.json({...result, idx: req.query.idx});
+})
+
+// 등산 기록 등록
+app.post('/score', (req, res) => {
+    score = new Score();
+    score.address = req.body.address;
+    score.score = req.body.score
+
+    Course.findOne({seq: req.body.course}, (err, course) => {
+        if(err) return res.json({result: 0, err})
+        
+        score.course = course._id;
+        score.save(err => {
+            if(err) return res.json({result: 0, err});
+
+            res.json({reulst: 1, id: score._id});
+        })
+    })
+})
+
+// 등산 기록 단일 조회(db)
+app.get('/score/:id', (req, res) => {
+    Score.findOne({_id: req.params.id})
+    .populate('course')
+    .exec((err, score) => {
+        if(err) return res.json({result: 0, err})
+        
+        res.json({reuslt: 1, score})
+    })
 })
 
 // 등산 기록 목록
