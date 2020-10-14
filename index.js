@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 const Caver = require('caver-js');
 const mongoose = require('mongoose');
 const axios = require('axios');
-const data = require('./Mountain.json');
 
 const app = express();
 dotenv.config();
@@ -117,6 +116,16 @@ app.get('/course', (req, res) => {
     .exec((err, list) => {
         if(err) res.json({result: 0, err})
         else res.json({result: 1, list})
+    })
+})
+
+// nfc id로 코스 정보 가져오기
+app.get('/nfc/:id', (req, res) => {
+    Point.findOne({nfc: req.params.id})
+    .populate('course')
+    .exec((err, point) => {
+        if(err) return res.json({result: 0, err})
+        res.json({result: 1, point})
     })
 })
 

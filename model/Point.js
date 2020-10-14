@@ -6,6 +6,8 @@ const pointSchema = new mongoose.Schema({
     distance: Number,
     time: String,
     difficulty: String,
+    course: {type: mongoose.Schema.Types.ObjectId, ref: 'Course'},
+    nfc: String
 })
 
 module.exports = mongoose.model('Point', pointSchema);
