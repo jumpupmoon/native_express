@@ -51,22 +51,42 @@ const getContract = () => {
 // 매니저 지갑
 const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
 
-// 등산 기록 등록
+// 등산 기록 등록 및 업데이트
 app.post('/score', (req, res) => {
-    score = new Score();
-    score.address = req.body.address;
-    score.score = req.body.score
-
-    Course.findOne({seq: req.body.course}, (err, course) => {
-        if(err) return res.json({result: 0, err})
-        
-        score.course = course._id;
-        score.save(err => {
+    if(req.body.score) {
+        Score.findOne()
+        .populate('course')
+        .sort('-start')
+        .exec((err, score) => {
             if(err) return res.json({result: 0, err});
-
-            res.json({result: 1, id: score._id});
+            
+            if(req.body.score > score.score && score.course.seq == req.body.course) {
+                Score.findOneAndUpdate({_id: score._id}, {score: req.body.score}, err => {
+                    if(err) return res.json({result: 0, err});
+                    res.json({result: 1, id: score._id});
+                })
+            } else {
+                res.json({result: 0});
+            }
         })
-    })
+    
+    // 등산 기록 등록
+    } else {
+        score = new Score();
+        score.address = req.body.address;
+        score.score = req.body.score
+    
+        Course.findOne({seq: req.body.course}, (err, course) => {
+            if(err) return res.json({result: 0, err})
+            
+            score.course = course._id;
+            score.save(err => {
+                if(err) return res.json({result: 0, err});
+    
+                res.json({result: 1, id: score._id});
+            })
+        })
+    }
 })
 
 // 등산 기록 단일 조회
