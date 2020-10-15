@@ -10,6 +10,7 @@ dotenv.config();
 const Course = require('./model/Course');
 const Score = require('./model/Score');
 const Point = require('./model/Point');
+const Record = require('./model/Record');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -64,6 +65,14 @@ app.post('/score', (req, res) => {
                 Score.findOneAndUpdate({_id: score._id}, {score: req.body.score}, err => {
                     if(err) return res.json({result: 0, err});
                     res.json({result: 1, id: score._id});
+
+                    // 해당 포인트 체크 시간 기록
+                    record = new Record();
+                    record.score = score._id
+                    record.point = score.course.courseDetail[req.body.score];
+                    record.save(err => {
+                        if(err) console.log(err);
+                    })
                 })
             } else {
                 res.json({result: 0});
@@ -82,8 +91,15 @@ app.post('/score', (req, res) => {
             score.course = course._id;
             score.save(err => {
                 if(err) return res.json({result: 0, err});
-    
                 res.json({result: 1, id: score._id});
+                
+                // 해당 포인트 체크 시간 기록
+                record = new Record();
+                record.score = score._id
+                record.point = course.courseDetail[req.body.score];
+                record.save(err => {
+                    if(err) console.log(err);
+                })
             })
         })
     }
