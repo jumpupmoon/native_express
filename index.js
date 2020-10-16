@@ -39,15 +39,15 @@ const option = {
 const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klaytnapi.com/v1/klaytn", option))
 
 // 배포한 컨트랙트 인스턴트 만들기
-const deployedABI = require('./deployedABI.json');
-const DEPLOY_ADDRESS = '0x8F34C3c00479910D0cBF3CCa1E7bDb2b1E7E045e';
+// const deployedABI = require('./deployedABI.json');
+// const DEPLOY_ADDRESS = '0x8F34C3c00479910D0cBF3CCa1E7bDb2b1E7E045e';
 
-const getContract = () => {
-  const contractInstance = deployedABI
-      && DEPLOY_ADDRESS
-      && new caver.klay.Contract(deployedABI, DEPLOY_ADDRESS);
-  return contractInstance;
-}
+// const getContract = () => {
+//   const contractInstance = deployedABI
+//       && DEPLOY_ADDRESS
+//       && new caver.klay.Contract(deployedABI, DEPLOY_ADDRESS);
+//   return contractInstance;
+// }
 
 // 매니저 지갑
 const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
