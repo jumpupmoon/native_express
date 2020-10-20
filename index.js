@@ -165,6 +165,10 @@ app.get('/nfc/:id', (req, res) => {
     })
 })
 
+app.get('/', (req, res) => {
+    res.send('23')
+})
+
 // 서버 시작
 app.listen(process.env.PORT || 5000, () => {
     console.log('server start');
