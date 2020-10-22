@@ -64,7 +64,6 @@ app.post('/score', (req, res) => {
             if(req.body.score > score.score && score.course.seq == req.body.course) {
                 Score.findOneAndUpdate({_id: score._id}, {score: req.body.score}, err => {
                     if(err) return res.json({result: 0, err});
-                    res.json({result: 1, id: score._id});
 
                     // 해당 포인트 체크 시간 기록
                     record = new Record();
@@ -72,6 +71,45 @@ app.post('/score', (req, res) => {
                     record.point = score.course.courseDetail[req.body.score];
                     record.save(err => {
                         if(err) console.log(err);
+
+                        if(score.course.courseDetail.length-1 == req.body.score) {
+                            // 등산 완료 시 태깅한 개수만큼 토큰 보상
+                            Record.find({score: score._id}, (err, cnt) => {
+                                tokenCnt = cnt.length;
+
+                                // 코스 완료 보상
+                                getContract().methods.mint(req.body.address, tokenCnt).send({
+                                    from: address,
+                                    gas: '200000'
+                                })
+                                .once('receipt', () => {
+                                    res.json({result: 1, id: score._id, finish: tokenCnt});
+                                })
+                                .once('error', error => {
+                                    console.log(error);
+                                    res.json({result: 1, id: score._id});
+                                }) 
+                            })
+                        } else {
+                            // 랜덤 토큰 지급
+                            const rdNum=Math.floor(Math.random()*2);
+                            if (rdNum==1){
+                                getContract().methods.mint(req.body.address, 1).send({
+                                    from: address,
+                                    gas: '200000'
+                                })
+                                .once('receipt', () => {
+                                    res.json({result: 1, id: score._id, token: 1});
+                                })
+                                .once('error', error => {
+                                    console.log(error);
+                                    res.json({result: 1, id: score._id});
+                                }) 
+                            } else {
+                                res.json({result: 1, id: score._id});
+                            }
+                        }
+
                     })
                 })
             } else {
@@ -91,7 +129,6 @@ app.post('/score', (req, res) => {
             score.course = course._id;
             score.save(err => {
                 if(err) return res.json({result: 0, err});
-                res.json({result: 1, id: score._id});
                 
                 // 해당 포인트 체크 시간 기록
                 record = new Record();
@@ -100,6 +137,24 @@ app.post('/score', (req, res) => {
                 record.save(err => {
                     if(err) console.log(err);
                 })
+
+                // 랜덤 토큰 지급
+                const rdNum=Math.floor(Math.random()*2);
+                if (rdNum==1){
+                    getContract().methods.mint(req.body.address, 1).send({
+                        from: address,
+                        gas: '200000'
+                    })
+                    .once('receipt', () => {
+                        res.json({result: 1, id: score._id, token: 1});
+                    })
+                    .once('error', error => {
+                        console.log(error);
+                        res.json({result: 1, id: score._id});
+                    }) 
+                } else {
+                    res.json({result: 1, id: score._id});
+                }
             })
         })
     }
@@ -129,7 +184,7 @@ app.get('/list/:address', (req, res) => {
 
 // 토큰 지급
 app.get('/reward', (req, res) => {
-    let rdNum=Math.floor(Math.random()*2)
+    const rdNum=Math.floor(Math.random()*2);
     if (rdNum==1){
         getContract().methods.mint(req.query.address, 1).send({
             from: address,
