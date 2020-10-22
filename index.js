@@ -68,7 +68,7 @@ app.get('/reward', (req, res) => {
     .once('error', error => {
         console.log(error);
         res.send('fail');
-    })
+    }) 
 })
 
 // 사용자 토큰 갯수
