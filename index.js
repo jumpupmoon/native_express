@@ -137,6 +137,11 @@ app.get('/new', (req, res) => {
     })
 })
 
+//git test code
+app.get('/', (req, res) => {
+    res.send('23')
+})
+
 // 서버 시작
 app.listen(port, () => {
     console.log(`server start port ${port}`);
