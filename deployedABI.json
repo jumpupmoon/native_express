@@ -3,19 +3,15 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "user",
+				"name": "account",
 				"type": "address"
 			},
 			{
-				"name": "idx",
-				"type": "uint8"
-			},
-			{
-				"name": "score",
-				"type": "uint8"
+				"name": "amount",
+				"type": "uint256"
 			}
 		],
-		"name": "end",
+		"name": "burnFrom",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -25,83 +21,66 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "user",
+				"name": "account",
 				"type": "address"
 			},
 			{
-				"name": "num",
-				"type": "uint8"
-			}
-		],
-		"name": "start",
-		"outputs": [
-			{
-				"name": "",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
+		"name": "mint",
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
-		"constant": true,
 		"inputs": [
 			{
-				"name": "user",
-				"type": "address"
+				"name": "name",
+				"type": "string"
 			},
 			{
-				"name": "idx",
-				"type": "uint8"
+				"name": "symbol",
+				"type": "string"
 			}
 		],
-		"name": "getRecord",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint8"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint8"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "getLength",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	}
 ]
