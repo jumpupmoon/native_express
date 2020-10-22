@@ -39,15 +39,15 @@ const option = {
 const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klaytnapi.com/v1/klaytn", option))
 
 // 배포한 컨트랙트 인스턴트 만들기
-// const deployedABI = require('./deployedABI.json');
-// const DEPLOY_ADDRESS = '0x8F34C3c00479910D0cBF3CCa1E7bDb2b1E7E045e';
+const deployedABI = require('./deployedABI.json');
+const DEPLOY_ADDRESS = '0x119D8E814154009DA73db7eFCE0fe4F791d10b2C';
 
-// const getContract = () => {
-//   const contractInstance = deployedABI
-//       && DEPLOY_ADDRESS
-//       && new caver.klay.Contract(deployedABI, DEPLOY_ADDRESS);
-//   return contractInstance;
-// }
+const getContract = () => {
+  const contractInstance = deployedABI
+      && DEPLOY_ADDRESS
+      && new caver.klay.Contract(deployedABI, DEPLOY_ADDRESS);
+  return contractInstance;
+}
 
 // 매니저 지갑
 const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
@@ -64,7 +64,6 @@ app.post('/score', (req, res) => {
             if(req.body.score > score.score && score.course.seq == req.body.course) {
                 Score.findOneAndUpdate({_id: score._id}, {score: req.body.score}, err => {
                     if(err) return res.json({result: 0, err});
-                    res.json({result: 1, id: score._id});
 
                     // 해당 포인트 체크 시간 기록
                     record = new Record();
@@ -72,6 +71,45 @@ app.post('/score', (req, res) => {
                     record.point = score.course.courseDetail[req.body.score];
                     record.save(err => {
                         if(err) console.log(err);
+
+                        if(score.course.courseDetail.length-1 == req.body.score) {
+                            // 등산 완료 시 태깅한 개수만큼 토큰 보상
+                            Record.find({score: score._id}, (err, cnt) => {
+                                tokenCnt = cnt.length;
+
+                                // 코스 완료 보상
+                                getContract().methods.mint(req.body.address, tokenCnt).send({
+                                    from: address,
+                                    gas: '200000'
+                                })
+                                .once('receipt', () => {
+                                    res.json({result: 1, id: score._id, finish: tokenCnt});
+                                })
+                                .once('error', error => {
+                                    console.log(error);
+                                    res.json({result: 1, id: score._id});
+                                }) 
+                            })
+                        } else {
+                            // 랜덤 토큰 지급
+                            const rdNum=Math.floor(Math.random()*2);
+                            if (rdNum==1){
+                                getContract().methods.mint(req.body.address, 1).send({
+                                    from: address,
+                                    gas: '200000'
+                                })
+                                .once('receipt', () => {
+                                    res.json({result: 1, id: score._id, token: 1});
+                                })
+                                .once('error', error => {
+                                    console.log(error);
+                                    res.json({result: 1, id: score._id});
+                                }) 
+                            } else {
+                                res.json({result: 1, id: score._id});
+                            }
+                        }
+
                     })
                 })
             } else {
@@ -91,7 +129,6 @@ app.post('/score', (req, res) => {
             score.course = course._id;
             score.save(err => {
                 if(err) return res.json({result: 0, err});
-                res.json({result: 1, id: score._id});
                 
                 // 해당 포인트 체크 시간 기록
                 record = new Record();
@@ -100,6 +137,24 @@ app.post('/score', (req, res) => {
                 record.save(err => {
                     if(err) console.log(err);
                 })
+
+                // 랜덤 토큰 지급
+                const rdNum=Math.floor(Math.random()*2);
+                if (rdNum==1){
+                    getContract().methods.mint(req.body.address, 1).send({
+                        from: address,
+                        gas: '200000'
+                    })
+                    .once('receipt', () => {
+                        res.json({result: 1, id: score._id, token: 1});
+                    })
+                    .once('error', error => {
+                        console.log(error);
+                        res.json({result: 1, id: score._id});
+                    }) 
+                } else {
+                    res.json({result: 1, id: score._id});
+                }
             })
         })
     }
@@ -126,6 +181,87 @@ app.get('/list/:address', (req, res) => {
         res.json({result: 1, scores})
     })
 })
+
+// 토큰 지급
+app.get('/reward', (req, res) => {
+    const rdNum=Math.floor(Math.random()*2);
+    if (rdNum==1){
+        getContract().methods.mint(req.query.address, 1).send({
+            from: address,
+            gas: '200000'
+        })
+        .once('receipt', receipt => {
+            console.log(receipt);
+            res.send('success');
+        })
+        .once('error', error => {
+            console.log(error);
+            res.send('fail');
+        }) 
+    }
+    else{
+        console.log('sorry...');
+    }
+    
+})
+
+// 사용자 토큰 갯수
+app.get('/token', async (req, res) => {
+    const result = await getContract().methods.balanceOf(req.query.address).call()
+    res.json({...result});
+})
+
+// // 등산 시작
+// app.get('/start', (req, res) => {
+//     getContract().methods.start(req.query.address, req.query.course).send({
+//         from: address,
+//         gas: '200000'
+//     })
+//     .once('receipt', receipt => {
+//         console.log(receipt);
+//         res.send('1');
+//     })
+//     .once('error', error => {
+//         console.log(error);
+//         res.send('fail');
+//     })
+// })
+
+// // 등산 종료
+// app.get('/end', (req, res) => {
+//     getContract().methods.end(req.query.address, req.query.idx, 5).send({
+//         from: address,
+//         gas: '200000'
+//     })
+//     .once('receipt', receipt => {
+//         console.log(receipt);
+//         res.send('ok');
+//     })
+//     .once('error', error => {
+//         console.log(error);
+//         res.send('fail');
+//     })
+// })
+
+// // 등산 기록 단일
+// app.get('/score', async (req, res) => {
+//     const result = await getContract().methods.getRecord(req.query.address, req.query.idx).call()
+//     res.json({...result, idx: req.query.idx});
+// })
+
+// // 등산 기록 목록
+// app.get('/list/:address', async (req, res) => {
+//     const count = await getContract().methods.getLength(req.params.address).call();
+//     let score = [];
+//     for(let i=count-1; i>-1; i--) {
+//         if(i == -1) break;
+//         if(i == count-5) break;
+
+//         const result = await getContract().methods.getRecord(req.params.address, i).call();
+//         score.push({...result, idx: i});
+//     }
+//     res.json({count, score});
+// })
 
 // 새로운 지갑 주소 생성
 app.get('/new', (req, res) => {
@@ -172,6 +308,6 @@ app.get('/', (req, res) => {
 // 서버 시작
 app.listen(process.env.PORT || 5000, () => {
     console.log('server start');
-    const wallet = caver.klay.accounts.privateKeyToAccount('0x7799f99c68259cec434d35cbaf419bc1c3f8dce0b4db6f2e6a972ade4a58bdac');
+    const wallet = caver.klay.accounts.privateKeyToAccount(process.env.PRIVATE_KEY);
     caver.klay.accounts.wallet.add(wallet);
-});
+})
