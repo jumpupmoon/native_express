@@ -37,7 +37,7 @@ const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klayt
 
 // 배포한 컨트랙트 인스턴트 만들기
 const deployedABI = require('./deployedABI.json');
-const DEPLOY_ADDRESS = '0xDB1a9Da448BA914206C03D7237237EdeBa96012D';
+const DEPLOY_ADDRESS = '0x119D8E814154009DA73db7eFCE0fe4F791d10b2C';
 
 const getContract = () => {
   const contractInstance = deployedABI
@@ -47,28 +47,33 @@ const getContract = () => {
 }
 
 // 매니저 지갑
-const address = '0xA056a429661D5609709433ff25b8Ea82590A0053';
+const address = process.env.PUBLIC_KEY;
 
-app.get('/:id',(req,res)=>{
-    res.send(req.params.id);
-})
+
 
 
 
 // 토큰 지급
 app.get('/reward', (req, res) => {
-    getContract().methods.mint(req.query.address, req.query.amount).send({
-        from: address,
-        gas: '200000'
-    })
-    .once('receipt', receipt => {
-        console.log(receipt);
-        res.send('success');
-    })
-    .once('error', error => {
-        console.log(error);
-        res.send('fail');
-    }) 
+    let rdNum=Math.floor(Math.random()*2)
+    if (rdNum==1){
+        getContract().methods.mint(req.query.address, 1).send({
+            from: address,
+            gas: '200000'
+        })
+        .once('receipt', receipt => {
+            console.log(receipt);
+            res.send('success');
+        })
+        .once('error', error => {
+            console.log(error);
+            res.send('fail');
+        }) 
+    }
+    else{
+        console.log('sorry...');
+    }
+    
 })
 
 // 사용자 토큰 갯수
@@ -137,14 +142,9 @@ app.get('/new', (req, res) => {
     })
 })
 
-//git test code
-app.get('/', (req, res) => {
-    res.send('23')
-})
-
 // 서버 시작
 app.listen(port, () => {
     console.log(`server start port ${port}`);
-    const wallet = caver.klay.accounts.privateKeyToAccount('0x7799f99c68259cec434d35cbaf419bc1c3f8dce0b4db6f2e6a972ade4a58bdac');
+    const wallet = caver.klay.accounts.privateKeyToAccount(process.env.PRIVATE_KEY);
     caver.klay.accounts.wallet.add(wallet);
 });
