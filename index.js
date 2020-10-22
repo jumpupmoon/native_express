@@ -157,7 +157,7 @@ app.get('/course', (req, res) => {
 
 // nfc id로 코스 정보 가져오기
 app.get('/nfc/:id', (req, res) => {
-    Point.findOne({nfc: req.params.id})
+    Point.find({nfc: req.params.id})
     .populate('course')
     .exec((err, point) => {
         if(err) return res.json({result: 0, err})
