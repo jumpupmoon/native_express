@@ -200,27 +200,21 @@ app.get('/list/:address', (req, res) => {
     })
 })
 
-// 토큰 지급
-// app.get('/reward', (req, res) => {
-//     const rdNum=Math.floor(Math.random()*2);
-//     if (rdNum==1){
-//         getContract().methods.mint(req.query.address, 10).send({
-//             from: address,
-//             gas: '200000'
-//         })
-//         .once('receipt', receipt => {
-//             console.log(receipt);
-//             res.send('success');
-//         })
-//         .once('error', error => {
-//             console.log(error);
-//             res.send('fail');
-//         }) 
-//     }
-//     else{
-//         console.log('sorry...');
-//     }
-// })
+// 토큰 충전
+app.get('/charge', (req, res) => {
+    getContract().methods.mint(req.query.address, req.query.amount).send({
+        from: address,
+        gas: '200000'
+    })
+    .once('receipt', receipt => {
+        console.log(receipt);
+        res.send('success');
+    })
+    .once('error', error => {
+        console.log(error);
+        res.send('fail');
+    }) 
+})
 
 // // 토큰 사용
 // app.get('/use', (req, res) => {
@@ -239,8 +233,8 @@ app.get('/list/:address', (req, res) => {
 // })
 
 // 사용자 토큰 갯수
-app.get('/token', async (req, res) => {
-    const result = await getContract7().methods.balanceOf(req.query.address).call()
+app.get('/token/:address', async (req, res) => {
+    const result = await getContract7().methods.balanceOf(req.params.address).call()
     res.json({token:result});
 })
 
