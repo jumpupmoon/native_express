@@ -38,6 +38,7 @@ contract Factory {
     }
     
     function mintCert(address account,uint8 num,uint256 tokenId) public onlyOwner{
+        KIP7Token(KIP7).burnFrom(account,10);
         KIP17Token(KIP17).mintCert(account,num,tokenId);
     }
 
