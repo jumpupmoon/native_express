@@ -43,8 +43,8 @@ const factoryABI = require('./ABI/factoryABI.json');
 const KIP7ABI = require('./ABI/KIP7ABI.json');
 const KIP17ABI = require('./ABI/KIP17ABI.json');
 const DEPLOY_ADDRESS = '0x5320C38e5b23534Ec56062b30bEE824EEA85a770';
-const KIP7_ADDRESS = '0xb9d8261b561b79fd21c3466d30dfa007bd087a48';
-const KIP17_ADDRESS = '0x872fdf97aa4a1e36684450f0e3594c5e841e12cc';
+const KIP7_ADDRESS = '0x20ed2e5bf766d4bffbbe298ad7d3a02e241f7a6f';
+const KIP17_ADDRESS = '0x19ddaee94efa8a7adfacf6468a9c2b61462fc714';
 
 const getContract = () => {
   const contractInstance = factoryABI
@@ -54,9 +54,9 @@ const getContract = () => {
 }
 
 const getContract7 = () => {
-  const contractInstance = factoryABI
+  const contractInstance = KIP7ABI
     && KIP7_ADDRESS
-    && new caver.klay.Contract(factoryABI, KIP7_ADDRESS);
+    && new caver.klay.Contract(KIP7ABI, KIP7_ADDRESS);
   return contractInstance;
 }
 
