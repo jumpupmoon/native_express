@@ -39,13 +39,31 @@ const option = {
 const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klaytnapi.com/v1/klaytn", option))
 
 // 배포한 컨트랙트 인스턴트 만들기
-const deployedABI = require('./deployedABI.json');
-const DEPLOY_ADDRESS = '0x119D8E814154009DA73db7eFCE0fe4F791d10b2C';
+const factoryABI = require('./ABI/factoryABI.json');
+const KIP7ABI = require('./ABI/KIP7ABI.json');
+const KIP17ABI = require('./ABI/KIP17ABI.json');
+const DEPLOY_ADDRESS = '0x5320C38e5b23534Ec56062b30bEE824EEA85a770';
+const KIP7_ADDRESS = '0xb9d8261b561b79fd21c3466d30dfa007bd087a48';
+const KIP17_ADDRESS = '0x872fdf97aa4a1e36684450f0e3594c5e841e12cc';
 
 const getContract = () => {
-  const contractInstance = deployedABI
+  const contractInstance = factoryABI
       && DEPLOY_ADDRESS
-      && new caver.klay.Contract(deployedABI, DEPLOY_ADDRESS);
+      && new caver.klay.Contract(factoryABI, DEPLOY_ADDRESS);
+  return contractInstance;
+}
+
+const getContract7 = () => {
+  const contractInstance = factoryABI
+    && KIP7_ADDRESS
+    && new caver.klay.Contract(factoryABI, KIP7_ADDRESS);
+  return contractInstance;
+}
+
+const getContract17 = () => {
+  const contractInstance = KIP17ABI
+    && KIP17_ADDRESS
+    && new caver.klay.Contract(KIP17ABI, KIP17_ADDRESS);
   return contractInstance;
 }
 
@@ -183,85 +201,72 @@ app.get('/list/:address', (req, res) => {
 })
 
 // 토큰 지급
-app.get('/reward', (req, res) => {
-    const rdNum=Math.floor(Math.random()*2);
-    if (rdNum==1){
-        getContract().methods.mint(req.query.address, 1).send({
-            from: address,
-            gas: '200000'
-        })
-        .once('receipt', receipt => {
-            console.log(receipt);
-            res.send('success');
-        })
-        .once('error', error => {
-            console.log(error);
-            res.send('fail');
-        }) 
-    }
-    else{
-        console.log('sorry...');
-    }
-    
-})
+// app.get('/reward', (req, res) => {
+//     const rdNum=Math.floor(Math.random()*2);
+//     if (rdNum==1){
+//         getContract().methods.mint(req.query.address, 10).send({
+//             from: address,
+//             gas: '200000'
+//         })
+//         .once('receipt', receipt => {
+//             console.log(receipt);
+//             res.send('success');
+//         })
+//         .once('error', error => {
+//             console.log(error);
+//             res.send('fail');
+//         }) 
+//     }
+//     else{
+//         console.log('sorry...');
+//     }
+// })
+
+// // 토큰 사용
+// app.get('/use', (req, res) => {
+//     getContract().methods.burnFrom(req.query.address, req.query.amount).send({
+//         from: address,
+//         gas: '200000'
+//     })
+//     .once('receipt', receipt => {
+//         console.log(receipt);
+//         res.send('used');
+//     })
+//     .once('error', error => {
+//         console.log(error);
+//         res.send('fail');
+//     })
+// })
 
 // 사용자 토큰 갯수
 app.get('/token', async (req, res) => {
-    const result = await getContract().methods.balanceOf(req.query.address).call()
-    res.json({...result});
+    const result = await getContract7().methods.balanceOf(req.query.address).call()
+    res.json({token:result});
 })
 
-// // 등산 시작
-// app.get('/start', (req, res) => {
-//     getContract().methods.start(req.query.address, req.query.course).send({
-//         from: address,
-//         gas: '200000'
-//     })
-//     .once('receipt', receipt => {
-//         console.log(receipt);
-//         res.send('1');
-//     })
-//     .once('error', error => {
-//         console.log(error);
-//         res.send('fail');
-//     })
-// })
+// 인증서 발급
+app.get('/cert', (req, res) => {
+    getContract().methods.mintCert(req.query.address, req.query.course,req.query.id).send({
+        from: address,
+        gas: '200000'
+    })
+    .once('receipt', receipt => {
+        console.log(receipt);
+        res.send('ok');
+    })
+    .once('error', error => {
+        console.log(error);
+        res.send('fail');
+    })
+})
 
-// // 등산 종료
-// app.get('/end', (req, res) => {
-//     getContract().methods.end(req.query.address, req.query.idx, 5).send({
-//         from: address,
-//         gas: '200000'
-//     })
-//     .once('receipt', receipt => {
-//         console.log(receipt);
-//         res.send('ok');
-//     })
-//     .once('error', error => {
-//         console.log(error);
-//         res.send('fail');
-//     })
-// })
+// 인증서 데이터 조회
+app.get('/certData', async (req, res) => {
+    const result = await getContract17().methods.certData(req.query.address,req.query.id).call()
+    res.json({course:result[0],time:result[1]});
+})
 
-// // 등산 기록 단일
-// app.get('/score', async (req, res) => {
-//     const result = await getContract().methods.getRecord(req.query.address, req.query.idx).call()
-//     res.json({...result, idx: req.query.idx});
-// })
-
-// // 등산 기록 목록
-// app.get('/list/:address', async (req, res) => {
-//     const count = await getContract().methods.getLength(req.params.address).call();
-//     let score = [];
-//     for(let i=count-1; i>-1; i--) {
-//         if(i == -1) break;
-//         if(i == count-5) break;
-
-//         const result = await getContract().methods.getRecord(req.params.address, i).call();
-//         score.push({...result, idx: i});
-//     }
-//     res.json({count, score});
-// })
+// http://localhost:5000/reward?address=0xA056a429661D5609709433ff25b8Ea82590A0053&
 
 // 새로운 지갑 주소 생성
 app.get('/new', (req, res) => {
