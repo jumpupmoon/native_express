@@ -1,12 +1,12 @@
 pragma solidity ^0.5.0;
 
-import "./KIP/token/KIP7/KIP7Token.sol";
-import "./KIP/token/KIP17/KIP17Token.sol";
+import "./KIP7Token.sol";
+import "./KIP17Token.sol";
 
 contract Factory {
 
-    mapping(address => KIP7Token) private KIP7;
-    mapping(address => KIP17Token) private KIP17;
+    KIP7Token private KIP7;
+    KIP17Token private KIP17;
     
     address private _owner;
     
@@ -17,32 +17,32 @@ contract Factory {
     
     constructor() public {
         _owner=msg.sender;
-        KIP17[msg.sender] = new KIP17Token("course","cert");
-        KIP7[msg.sender] = new KIP7Token("WhiteDeer","WD", uint8(2),0);
+        KIP17 = new KIP17Token("course","cert");
+        KIP7 = new KIP7Token("WhiteDeer","WD", uint8(0),0);
     }
 
     function mint(address account,uint256 amount) public onlyOwner{
-        KIP7Token(KIP7[msg.sender]).mint(account,amount);
+        KIP7Token(KIP7).mint(account,amount);
     }
     
     function burnFrom(address account, uint256 amount) public onlyOwner{
-        KIP7Token(KIP7[msg.sender]).burnFrom(account,amount); 
+        KIP7Token(KIP7).burnFrom(account,amount); 
     }
     
     function balanceOf(address account) public view onlyOwner returns (uint256) {
-        return KIP7Token(KIP7[msg.sender]).balanceOf(account);
+        return KIP7Token(KIP7).balanceOf(account);
     } 
     
     function totalSupply() public  view onlyOwner returns (uint256){
-        return KIP7Token(KIP7[msg.sender]).totalSupply();
+        return KIP7Token(KIP7).totalSupply();
     }
     
     function mintCert(address account,uint8 num,uint256 tokenId) public onlyOwner{
-        KIP17Token(KIP17[msg.sender]).mintCert(account,num,tokenId);
+        KIP17Token(KIP17).mintCert(account,num,tokenId);
     }
 
     function certData(address account,uint256 tokenId) public view onlyOwner returns(uint8,uint256){
-        return KIP17Token(KIP17[msg.sender]).certData(account,tokenId);
+        return KIP17Token(KIP17).certData(account,tokenId);
     } 
     
 }
