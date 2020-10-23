@@ -54,9 +54,9 @@ const getContract = () => {
 }
 
 const getContract7 = () => {
-  const contractInstance = factoryABI
+  const contractInstance = KIP7ABI
     && KIP7_ADDRESS
-    && new caver.klay.Contract(factoryABI, KIP7_ADDRESS);
+    && new caver.klay.Contract(KIP7ABI, KIP7_ADDRESS);
   return contractInstance;
 }
 
