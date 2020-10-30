@@ -43,7 +43,6 @@ const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klayt
 const factoryABI = require('./ABI/factoryABI.json');
 const KIP7ABI = require('./ABI/KIP7ABI.json');
 const KIP17ABI = require('./ABI/KIP17ABI.json');
-const { emit } = require("./model/Course");
 const DEPLOY_ADDRESS = '0x5320C38e5b23534Ec56062b30bEE824EEA85a770';
 const KIP7_ADDRESS = '0xb9d8261b561b79fd21c3466d30dfa007bd087a48';
 const KIP17_ADDRESS = '0x872fdf97aa4a1e36684450f0e3594c5e841e12cc';
@@ -87,7 +86,7 @@ app.post('/score', (req, res) => {
                 }
                 // 등산 완료 여부 체크 후 마지막 시간 등록
                 if(score.course.courseDetail.length-1 == req.body.score) {
-                    updateDate.end = new Date();
+                    updateData.end = new Date();
                 }
 
                 Score.findOneAndUpdate({_id: score._id}, updateData, err => {
@@ -340,7 +339,7 @@ app.post('/user', (req, res) => {
 // 
 app.get('/', (req, res) => {
     Score.aggregate([
-        {$match: {end: 1}},
+        {$match: {end: {$ne: null}}},
         {$group: {
             _id: "$address",
             count: {$sum: 1}
