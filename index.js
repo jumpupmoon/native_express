@@ -13,6 +13,21 @@ const Point = require('./model/Point');
 const Record = require('./model/Record');
 const User = require('./model/User');
 
+let tokenId = 1005;
+
+const ipfsClient = require('ipfs-http-client');
+const fileUpload = require('express-fileupload');
+const fs = require('fs');
+const ipfs = new ipfsClient({host: 'localhost', port : '5000',protocol:'http'});
+app.use(fileUpload());
+
+// const tImg = multer({dest: 'images/'}) //dest : 저장 위치
+
+// router.post('/upload',upload.single('img'),(req,res) => {
+//     res.json(req.file)
+//     console.log(req.file)
+// })
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -44,8 +59,8 @@ const factoryABI = require('./ABI/factoryABI.json');
 const KIP7ABI = require('./ABI/KIP7ABI.json');
 const KIP17ABI = require('./ABI/KIP17ABI.json');
 const DEPLOY_ADDRESS = '0x5320C38e5b23534Ec56062b30bEE824EEA85a770';
-const KIP7_ADDRESS = '0xb9d8261b561b79fd21c3466d30dfa007bd087a48';
-const KIP17_ADDRESS = '0x872fdf97aa4a1e36684450f0e3594c5e841e12cc';
+const KIP7_ADDRESS = '0x20ed2e5bf766d4bffbbe298ad7d3a02e241f7a6f';
+const KIP17_ADDRESS = '0x19ddaee94efa8a7adfacf6468a9c2b61462fc714';
 
 const getContract = () => {
   const contractInstance = factoryABI
@@ -55,9 +70,9 @@ const getContract = () => {
 }
 
 const getContract7 = () => {
-  const contractInstance = factoryABI
+  const contractInstance = KIP7ABI
     && KIP7_ADDRESS
-    && new caver.klay.Contract(factoryABI, KIP7_ADDRESS);
+    && new caver.klay.Contract(KIP7ABI, KIP7_ADDRESS);
   return contractInstance;
 }
 
@@ -209,27 +224,21 @@ app.get('/list/:address', (req, res) => {
     })
 })
 
-// 토큰 지급
-// app.get('/reward', (req, res) => {
-//     const rdNum=Math.floor(Math.random()*2);
-//     if (rdNum==1){
-//         getContract().methods.mint(req.query.address, 10).send({
-//             from: address,
-//             gas: '200000'
-//         })
-//         .once('receipt', receipt => {
-//             console.log(receipt);
-//             res.send('success');
-//         })
-//         .once('error', error => {
-//             console.log(error);
-//             res.send('fail');
-//         }) 
-//     }
-//     else{
-//         console.log('sorry...');
-//     }
-// })
+// 토큰 충전
+app.get('/charge', (req, res) => {
+    getContract().methods.mint(req.query.address, req.query.amount).send({
+        from: address,
+        gas: '200000'
+    })
+    .once('receipt', receipt => {
+        console.log(receipt);
+        res.send('success');
+    })
+    .once('error', error => {
+        console.log(error);
+        res.send('fail');
+    }) 
+})
 
 // // 토큰 사용
 // app.get('/use', (req, res) => {
@@ -248,26 +257,30 @@ app.get('/list/:address', (req, res) => {
 // })
 
 // 사용자 토큰 갯수
-app.get('/token', async (req, res) => {
-    const result = await getContract7().methods.balanceOf(req.query.address).call()
+app.get('/token/:address', async (req, res) => {
+    const result = await getContract7().methods.balanceOf(req.params.address).call()
     res.json({token:result});
 })
 
 // 인증서 발급
 app.get('/cert', (req, res) => {
-    getContract().methods.mintCert(req.query.address, req.query.course,req.query.id).send({
+    getContract().methods.mintCert(req.query.address, req.query.course,tokenId).send({
         from: address,
         gas: '200000'
     })
     .once('receipt', receipt => {
-        console.log(receipt);
-        res.send('ok');
+        tokenId++;
+        Score.findOneAndUpdate({_id : req.query.scoreId},{token: tokenId},(err)=>{
+            if(err) return res.send('fail');
+            res.send('ok');
+        })
     })
     .once('error', error => {
         console.log(error);
         res.send('fail');
     })
 })
+
 
 // 인증서 데이터 조회
 app.get('/certData', async (req, res) => {
@@ -276,6 +289,7 @@ app.get('/certData', async (req, res) => {
 })
 
 // http://localhost:5000/reward?address=0xA056a429661D5609709433ff25b8Ea82590A0053&
+// 
 
 // 새로운 지갑 주소 생성
 app.get('/new', (req, res) => {
@@ -351,6 +365,39 @@ app.get('/', (req, res) => {
     })
 
     res.send('23')
+})
+
+app.post('/upload',(req,res)=>{
+    //const file = req.files.file;
+    const file = req.files.file;
+    const fileName = req.body.fileName;
+    const filePath = 'files/'+ fileName;
+
+    file.mv(filePath, async(err)=>{
+        if(err) {
+            console.log('Error : failed to download the file');
+            return res.status(500).send(err);
+        }
+
+        const fileHash = await addFile(fileName,filePath);
+        fs.unlink(filePath, (err)=>{
+            if(err) console.log(err);
+        });
+
+        res.render('upload',{fileName,fileHash});
+    });
+});
+
+const addFile = async()=>{
+    const file = fs.readFileSync(filePath);
+    const fileAdded = await ipfs.add({path:__filename,content:file});
+    const fileHash = fileAdded[0].hash;
+
+    return fileHash;
+}
+
+app.get('/api', (req, res) => {
+    res.send('1')
 })
 
 // 서버 시작
