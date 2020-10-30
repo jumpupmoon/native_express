@@ -5,7 +5,8 @@ const scoreSchema = new mongoose.Schema({
     start: {type: Date, default: Date.now, required: true},
     end: Date,
     score: {type: Number, required: true},
-    address: {type: String, required: true}
+    address: {type: String, required: true},
+    token : Number
 })
 
 module.exports = mongoose.model('Score', scoreSchema);

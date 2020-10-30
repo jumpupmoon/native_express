@@ -12,6 +12,21 @@ const Score = require('./model/Score');
 const Point = require('./model/Point');
 const Record = require('./model/Record');
 
+let tokenId = 1005;
+
+const ipfsClient = require('ipfs-http-client');
+const fileUpload = require('express-fileupload');
+const fs = require('fs');
+const ipfs = new ipfsClient({host: 'localhost', port : '5000',protocol:'http'});
+app.use(fileUpload());
+
+// const tImg = multer({dest: 'images/'}) //dest : 저장 위치
+
+// router.post('/upload',upload.single('img'),(req,res) => {
+//     res.json(req.file)
+//     console.log(req.file)
+// })
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -240,19 +255,23 @@ app.get('/token/:address', async (req, res) => {
 
 // 인증서 발급
 app.get('/cert', (req, res) => {
-    getContract().methods.mintCert(req.query.address, req.query.course,req.query.id).send({
+    getContract().methods.mintCert(req.query.address, req.query.course,tokenId).send({
         from: address,
         gas: '200000'
     })
     .once('receipt', receipt => {
-        console.log(receipt);
-        res.send('ok');
+        tokenId++;
+        Score.findOneAndUpdate({_id : req.query.scoreId},{token: tokenId},(err)=>{
+            if(err) return res.send('fail');
+            res.send('ok');
+        })
     })
     .once('error', error => {
         console.log(error);
         res.send('fail');
     })
 })
+
 
 // 인증서 데이터 조회
 app.get('/certData', async (req, res) => {
@@ -261,6 +280,7 @@ app.get('/certData', async (req, res) => {
 })
 
 // http://localhost:5000/reward?address=0xA056a429661D5609709433ff25b8Ea82590A0053&
+// 
 
 // 새로운 지갑 주소 생성
 app.get('/new', (req, res) => {
@@ -300,8 +320,38 @@ app.get('/nfc/:id', (req, res) => {
     })
 })
 
-app.get('/', (req, res) => {
-    res.send('23')
+
+app.post('/upload',(req,res)=>{
+    //const file = req.files.file;
+    const file = req.files.file;
+    const fileName = req.body.fileName;
+    const filePath = 'files/'+ fileName;
+
+    file.mv(filePath, async(err)=>{
+        if(err) {
+            console.log('Error : failed to download the file');
+            return res.status(500).send(err);
+        }
+
+        const fileHash = await addFile(fileName,filePath);
+        fs.unlink(filePath, (err)=>{
+            if(err) console.log(err);
+        });
+
+        res.render('upload',{fileName,fileHash});
+    });
+});
+
+const addFile = async()=>{
+    const file = fs.readFileSync(filePath);
+    const fileAdded = await ipfs.add({path:__filename,content:file});
+    const fileHash = fileAdded[0].hash;
+
+    return fileHash;
+}
+
+app.get('/api', (req, res) => {
+    res.send('1')
 })
 
 // 서버 시작
