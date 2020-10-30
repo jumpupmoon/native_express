@@ -11,6 +11,7 @@ const Course = require('./model/Course');
 const Score = require('./model/Score');
 const Point = require('./model/Point');
 const Record = require('./model/Record');
+const User = require('./model/User');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -266,7 +267,12 @@ app.get('/certData', async (req, res) => {
 app.get('/new', (req, res) => {
     axios.post('https://wallet-api.klaytnapi.com/v2/account', '', walletHeaders)
     .then(({data}) => {
-        res.send(data.address);
+        user = new User();
+        user.address = data.address;
+        user.save(err => {
+            if(err) return res.send(null);
+            res.send(data.address);
+        })
     })
 })
 
@@ -298,6 +304,22 @@ app.get('/nfc/:id', (req, res) => {
         if(err) return res.json({result: 0, err})
         res.json({result: 1, point})
     })
+})
+
+// 유저 정보 수정
+app.post('/user', (req, res) => {
+    User.findOneAndUpdate(
+        {address: req.body.address}, 
+        {
+            name: req.body.name,
+            email: req.body.email
+        }, 
+        {new: true}, 
+        (err, user) => {
+            if(err) return res.json({result: 0, err})
+            res.json({result: 1, user});
+    })
+
 })
 
 app.get('/', (req, res) => {
