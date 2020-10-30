@@ -4,6 +4,7 @@ const scoreSchema = new mongoose.Schema({
     course: {type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true},
     start: {type: Date, default: Date.now, required: true},
     end: Date,
+    end: {type: Date},
     score: {type: Number, required: true},
     address: {type: String, required: true}
 })

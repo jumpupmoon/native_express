@@ -43,6 +43,7 @@ const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klayt
 const factoryABI = require('./ABI/factoryABI.json');
 const KIP7ABI = require('./ABI/KIP7ABI.json');
 const KIP17ABI = require('./ABI/KIP17ABI.json');
+const { emit } = require("./model/Course");
 const DEPLOY_ADDRESS = '0x5320C38e5b23534Ec56062b30bEE824EEA85a770';
 const KIP7_ADDRESS = '0xb9d8261b561b79fd21c3466d30dfa007bd087a48';
 const KIP17_ADDRESS = '0x872fdf97aa4a1e36684450f0e3594c5e841e12cc';
@@ -81,7 +82,15 @@ app.post('/score', (req, res) => {
             if(err) return res.json({result: 0, err});
             
             if(req.body.score > score.score && score.course.seq == req.body.course) {
-                Score.findOneAndUpdate({_id: score._id}, {score: req.body.score}, err => {
+                let updateData = {
+                    score: req.body.score
+                }
+                // 등산 완료 여부 체크 후 마지막 시간 등록
+                if(score.course.courseDetail.length-1 == req.body.score) {
+                    updateDate.end = new Date();
+                }
+
+                Score.findOneAndUpdate({_id: score._id}, updateData, err => {
                     if(err) return res.json({result: 0, err});
 
                     // 해당 포인트 체크 시간 기록
@@ -91,8 +100,8 @@ app.post('/score', (req, res) => {
                     record.save(err => {
                         if(err) console.log(err);
 
-                        if(score.course.courseDetail.length-1 == req.body.score) {
-                            // 등산 완료 시 태깅한 개수만큼 토큰 보상
+                        // 등산 완료 시 태깅한 개수만큼 토큰 보상
+                        if(updateData.end) {
                             Record.find({score: score._id}, (err, cnt) => {
                                 tokenCnt = cnt.length;
 
@@ -328,7 +337,20 @@ app.post('/user', (req, res) => {
 
 })
 
+// 
 app.get('/', (req, res) => {
+    Score.aggregate([
+        {$match: {end: 1}},
+        {$group: {
+            _id: "$address",
+            count: {$sum: 1}
+        }}
+    ])
+    .exec((err, data) => {
+        console.log(err)
+        console.log(data)
+    })
+
     res.send('23')
 })
 
