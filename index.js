@@ -3,9 +3,12 @@ const dotenv = require("dotenv");
 const Caver = require('caver-js');
 const mongoose = require('mongoose');
 const axios = require('axios');
+const fs = require('fs')
 
 const app = express();
 dotenv.config();
+
+https://stackoverflow.com/questions/41915955/using-react-native-camera-how-to-access-saved-pictures
 
 const Course = require('./model/Course');
 const Score = require('./model/Score');
@@ -15,11 +18,10 @@ const User = require('./model/User');
 
 let tokenId = 1005;
 
-const ipfsClient = require('ipfs-http-client');
-const fileUpload = require('express-fileupload');
-const fs = require('fs');
-const ipfs = new ipfsClient({host: 'localhost', port : '5000',protocol:'http'});
-app.use(fileUpload());
+// const ipfsClient = require('ipfs-http-client');
+// const fileUpload = require('express-fileupload');
+// const ipfs = new ipfsClient({host: 'localhost', port : '5000',protocol:'http'});
+// app.use(fileUpload());
 
 // const tImg = multer({dest: 'images/'}) //dest : 저장 위치
 
@@ -35,6 +37,8 @@ app.use(express.urlencoded({ extended: false }));
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false})
 .then(() => console.log('connected to mongodb'))
 .catch(e => console.error(e));
+
+
 
 // wallet header
 const walletHeaders = {
@@ -53,6 +57,8 @@ const option = {
   }
   
 const caver = new Caver(new Caver.providers.HttpProvider("https://node-api.klaytnapi.com/v1/klaytn", option))
+
+
 
 // 배포한 컨트랙트 인스턴트 만들기
 const factoryABI = require('./ABI/factoryABI.json');
@@ -367,34 +373,47 @@ app.get('/', (req, res) => {
     res.send('23')
 })
 
-app.post('/upload',(req,res)=>{
-    //const file = req.files.file;
-    const file = req.files.file;
-    const fileName = req.body.fileName;
-    const filePath = 'files/'+ fileName;
+let img = require('fs').readFileSync('./klaytn.jpg');
+let testFileName = './klaytn.jpg'
+let contents;
+let addedWithContents;
 
-    file.mv(filePath, async(err)=>{
-        if(err) {
-            console.log('Error : failed to download the file');
-            return res.status(500).send(err);
-        }
+app.get('/ipfs/set', (req,res)=>{
+    tcaver.ipfs.setIPFSNode('ipfs.infura.io', 5000, true)
+    console.log('set')
+})
 
-        const fileHash = await addFile(fileName,filePath);
-        fs.unlink(filePath, (err)=>{
-            if(err) console.log(err);
-        });
+app.get('/ipfs/create', (req,res)=>{
+     // Create test txt file for IPFS
+     fs.openSync(testFileName, 'w+')
+     fs.writeFileSync(testFileName, 'test data for IPFS')
+     console.log(testFileName)
+})
 
-        res.render('upload',{fileName,fileHash});
-    });
-});
+app.get('/ipfs/add1', (req,res)=>{
+    // Add file to IPFS with file contents
+    contents = fs.readFileSync(testFileName)
+    console.log("add1")
+    console.log(contents);
+})
 
-const addFile = async()=>{
-    const file = fs.readFileSync(filePath);
-    const fileAdded = await ipfs.add({path:__filename,content:file});
-    const fileHash = fileAdded[0].hash;
+app.get('/ipfs/add2',async (req,res)=>{
+    //  tcaver.ipfs.setIPFSNode('ipfs.infura.io', 5000, true)
+    // Add file to IPFS with file contents
+    // const addedWithContents = await tcaver.ipfs.add(contents)
+    // expect(typeof addedWithContents).to.equal('string')
+    contents=await tcaver.ipfs.add(testFileName)
+    console.log(contents)
 
-    return fileHash;
-}
+})
+
+app.get('/ipfs/get',async (req,res)=>{
+    // Get contents from IPFS
+    const fileFromIPFS = await tcaver.ipfs.get(addedWithContents)
+    console.log(fileFromIPFS);
+    console.log("get")
+})
+
 
 app.get('/api', (req, res) => {
     res.send('1')
